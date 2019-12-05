@@ -1,26 +1,53 @@
-"""
-Module that contains the command line app.
-
-Why does this file exist, and why not put this in __main__?
-
-  You might be tempted to import things from __main__ later, but that will cause
-  problems: the code will get executed twice:
-
-  - When you run `python -mpactor` python will execute
-    ``__main__.py`` as a script. That means there won't be any
-    ``pactor.__main__`` in ``sys.modules``.
-  - When you import __main__ it will get executed again (as a module) because
-    there's no ``pactor.__main__`` in ``sys.modules``.
-
-  Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
-"""
-import argparse
-
-parser = argparse.ArgumentParser(description='Command description.')
-parser.add_argument('names', metavar='NAME', nargs=argparse.ZERO_OR_MORE,
-                    help="A name of something.")
+import multiprocessing
+import random
+import time
+from pactor.actor import actor
 
 
-def main(args=None):
-    args = parser.parse_args(args=args)
-    print(args.names)
+@actor
+class Ponger:
+    def __init__(self, name):
+        self.name = name
+
+    def set_pinger(self, pinger):
+        self.pinger = pinger
+
+    def pong(self, count):
+        count += 1
+        proc_name = multiprocessing.current_process().name
+        print('ponging %s with count %s in %s' % (self.name, count, proc_name))
+        time.sleep(random.randint(10, 500) / 1000.0)
+        self.pinger.ping(count)
+
+
+@actor
+class Pinger:
+    def __init__(self, name):
+        self.name = name
+
+    def set_ponger(self, ponger):
+        self.ponger = ponger
+
+    def ping(self, count):
+        count += 1
+        proc_name = multiprocessing.current_process().name
+        print('pinging %s with count %s in %s' % (self.name, count, proc_name))
+        time.sleep(random.randint(10, 500) / 1000.0)
+        self.ponger.pong(count)
+
+
+def main():
+    ping1 = Pinger('ping one')
+    ping2 = Pinger('ping two')
+
+    pong1 = Ponger('pong one')
+    pong2 = Ponger('pong two')
+
+    ping1.set_ponger(pong1.proxy)
+    ping2.set_ponger(pong2.proxy)
+
+    pong1.set_pinger(ping2.proxy)
+    pong2.set_pinger(ping1.proxy)
+
+    ping1.ping(0)
+    ping1.join()

@@ -1,54 +1,13 @@
 ========
-Overview
+pactor
 ========
 
 .. start-badges
 
-.. list-table::
-    :stub-columns: 1
+| |travis|
 
-    * - docs
-      - |docs|
-    * - tests
-      - | |travis|
-        |
-        | |codeclimate|
-    * - package
-      - | |version| |wheel| |supported-versions| |supported-implementations|
-        | |commits-since|
-.. |docs| image:: https://readthedocs.org/projects/pactor/badge/?style=flat
-    :target: https://readthedocs.org/projects/pactor
-    :alt: Documentation Status
-
-.. |travis| image:: https://api.travis-ci.org/rtoddcarlson/pactor.svg?branch=master
-    :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/rtoddcarlson/pactor
-
-.. |codeclimate| image:: https://codeclimate.com/github/rtoddcarlson/pactor/badges/gpa.svg
-   :target: https://codeclimate.com/github/rtoddcarlson/pactor
-   :alt: CodeClimate Quality Status
-
-.. |version| image:: https://img.shields.io/pypi/v/pactor.svg
-    :alt: PyPI Package latest release
-    :target: https://pypi.org/project/pactor
-
-.. |wheel| image:: https://img.shields.io/pypi/wheel/pactor.svg
-    :alt: PyPI Wheel
-    :target: https://pypi.org/project/pactor
-
-.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/pactor.svg
-    :alt: Supported versions
-    :target: https://pypi.org/project/pactor
-
-.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/pactor.svg
-    :alt: Supported implementations
-    :target: https://pypi.org/project/pactor
-
-.. |commits-since| image:: https://img.shields.io/github/commits-since/rtoddcarlson/pactor/v0.0.0.svg
-    :alt: Commits since latest release
-    :target: https://github.com/rtoddcarlson/pactor/compare/v0.0.0...master
-
-
+.. |travis| image:: https://travis-ci.com/rtoddcarlson/pactor.svg?token=kUEn8LnV35Cck9sKzqic&branch=master
+    :target: https://travis-ci.com/rtoddcarlson/pactor
 
 .. end-badges
 
@@ -71,8 +30,7 @@ You can also install the in-development version with::
 Documentation
 =============
 
-
-https://pactor.readthedocs.io/
+Getting started with pactor
 
 
 Development

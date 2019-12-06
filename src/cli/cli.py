@@ -1,7 +1,7 @@
 import multiprocessing
 import random
 import time
-from pactor.actor import actor
+from pactor import actor
 
 
 @actor
@@ -43,11 +43,11 @@ def main():
     pong1 = Ponger('pong one')
     pong2 = Ponger('pong two')
 
-    ping1.set_ponger(pong1.proxy)
-    ping2.set_ponger(pong2.proxy)
+    ping1.proxy.set_ponger(pong1.proxy)
+    ping2.proxy.set_ponger(pong2.proxy)
 
-    pong1.set_pinger(ping2.proxy)
-    pong2.set_pinger(ping1.proxy)
+    pong1.proxy.set_pinger(ping2.proxy)
+    pong2.proxy.set_pinger(ping1.proxy)
 
-    ping1.ping(0)
+    ping1.proxy.ping(0)
     ping1.join()

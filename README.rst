@@ -93,20 +93,20 @@ These could be used as follows:
     def main():
         primary_mon = Monitor('primary')
         secondary_mon = Monitor('secondary)
-        agg = Aggregator('aggregator')
+        aggregator = Aggregator('aggregator')
 
-        primary_mon.proxy.set_aggregator(agg.proxy)
-        secondary_mon.proxy.set_aggregator(agg.proxy)
+        primary_mon.set_aggregator(aggregator.proxy)
+        secondary_mon.set_aggregator(aggregator.proxy)
 
-        primary_mon.proxy.read_status()
-        secondary_mon.proxy.read_status()
+        primary_mon.read_status()
+        secondary_mon.read_status()
 
-        agg.join()
+        aggregator.join()
 
 This simple example highlights several critical points:
 
 * Each @actor class will actually run in a separate process
-* The @actor class should be accessed through the .proxy member which is created by the decorator.
+* One @actor can be passed to another @actor using the .proxy,member, which is created by the decorator.
 * Invoking a method on an @actor proxy does not directly invoke that method on the calling thread, but instead is wrapped as a message and passed to the actor process.
 
 The wrapper provided by the @actor decorator exposes two key methods that can be called directly on the created instance:

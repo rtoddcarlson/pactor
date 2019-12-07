@@ -75,6 +75,7 @@ def actor(cls):
             setattr(self.proxy, 'act', QueueRedirect(self.queue, 'act'))
             for attr in cls.__dict__:
                 if callable(getattr(cls, attr)) and not attr.startswith('__'):
+                    setattr(self, attr, QueueRedirect(self.queue, attr))
                     setattr(self.proxy, attr, QueueRedirect(self.queue, attr))
 
         def join(self):

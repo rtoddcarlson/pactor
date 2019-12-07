@@ -10,15 +10,6 @@ matrix:
     - python: '3.6'
       env:
         - TOXENV=check
-    - python: '3.6'
-      env:
-        - TOXENV=docs
-    - env:
-        - TOXENV=py27
-      python: '2.7'
-    - env:
-        - TOXENV=py35
-      python: '3.5'
     - env:
         - TOXENV=py36
       python: '3.6'
@@ -28,13 +19,6 @@ matrix:
     - env:
         - TOXENV=py38
       python: '3.8'
-    - env:
-        - TOXENV=pypy
-      python: 'pypy'
-    - env:
-        - TOXENV=pypy3
-        - TOXPYTHON=pypy3
-      python: 'pypy3'
 before_install:
   - python --version
   - uname -a

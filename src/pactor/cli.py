@@ -1,26 +1,45 @@
-"""
-Module that contains the command line app.
-
-Why does this file exist, and why not put this in __main__?
-
-  You might be tempted to import things from __main__ later, but that will cause
-  problems: the code will get executed twice:
-
-  - When you run `python -mpactor` python will execute
-    ``__main__.py`` as a script. That means there won't be any
-    ``pactor.__main__`` in ``sys.modules``.
-  - When you import __main__ it will get executed again (as a module) because
-    there's no ``pactor.__main__`` in ``sys.modules``.
-
-  Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
-"""
-import argparse
-
-parser = argparse.ArgumentParser(description='Command description.')
-parser.add_argument('names', metavar='NAME', nargs=argparse.ZERO_OR_MORE,
-                    help="A name of something.")
+import random
+import time
+from pactor import actor
 
 
-def main(args=None):
-    args = parser.parse_args(args=args)
-    print(args.names)
+@actor
+class Monitor:
+    def __init__(self, name):
+        self.name = name
+        self.current_value = -1
+
+    def set_aggregator(self, aggregator):
+        self.aggregator = aggregator
+
+    def run_monitor(self):
+        while True:
+            time.sleep(random.randint(100, 5000) / 1000.0)
+            self.current_value = random.randint(0, 100)
+            self.aggregator.notify(self.name, self.current_value)
+
+
+@actor
+class Aggregator:
+    def __init__(self):
+        self.values = {}
+
+    def notify(self, monitor_name, value):
+        if monitor_name not in self.values:
+            self.values[monitor_name] = []
+        self.values[monitor_name].append(value)
+        print('Received notification of value %s from monitor %s' % (value, monitor_name))
+
+
+def main():
+    mon1 = Monitor('robot')
+    mon2 = Monitor('conveyor')
+    agg = Aggregator()
+
+    mon1.set_aggregator(agg.proxy)
+    mon2.set_aggregator(agg.proxy)
+
+    mon1.run_monitor()
+    mon2.run_monitor()
+
+    agg.join()

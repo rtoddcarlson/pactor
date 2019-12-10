@@ -1,3 +1,4 @@
+import multiprocessing
 import random
 import time
 from pactor import actor
@@ -15,8 +16,9 @@ class Monitor:
     def run_monitor(self):
         while True:
             time.sleep(random.randint(100, 5000) / 1000.0)
+            process_name = multiprocessing.current_process().name
             self.current_value = random.randint(0, 100)
-            self.aggregator.notify(self.name, self.current_value)
+            self.aggregator.notify(self.name, self.current_value, process_name)
 
 
 @actor
@@ -24,11 +26,14 @@ class Aggregator:
     def __init__(self):
         self.values = {}
 
-    def notify(self, monitor_name, value):
+    def notify(self, monitor_name, value, process_name):
         if monitor_name not in self.values:
             self.values[monitor_name] = []
         self.values[monitor_name].append(value)
-        print('Received notification of value %s from monitor %s' % (value, monitor_name))
+        this_process_name = multiprocessing.current_process().name
+
+        print('Received notification (%s) of value %s from monitor %s in process %s' %
+              (this_process_name, value, monitor_name, process_name))
 
 
 def main():

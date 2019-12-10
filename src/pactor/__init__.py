@@ -30,6 +30,18 @@ class QueueRedirect:
         self.queue.put_nowait((self.name, args))
 
 
+class EnqueueCall:
+    """
+        A callable that writes to a queue from a callable target.  The tuple value written to the queue includes the
+        name of the callable_target as well as the arguments passed to the call.
+    """
+    def __init__(self, queue):
+        self.queue = queue
+
+    def __call__(self, callable_target, *args):
+        self.queue.put_nowait((callable_target.__name__, args))
+
+
 def actor(cls):
     """
         A class decorator used to mark a class as an Actor.
@@ -67,12 +79,12 @@ def actor(cls):
 
             # Initialize the underlying instance and process
             actor_instance = cls(*args, **kwargs)
+            setattr(actor_instance, 'enqueue', EnqueueCall(self.queue))
             self.actor_process = multiprocessing.Process(target=run_worker, args=(self.queue, actor_instance))
             self.actor_process.start()
 
             # Build the proxy
             self.proxy = Proxy()
-            setattr(self.proxy, 'act', QueueRedirect(self.queue, 'act'))
             for attr in cls.__dict__:
                 if callable(getattr(cls, attr)) and not attr.startswith('__'):
                     setattr(self, attr, QueueRedirect(self.queue, attr))

@@ -1,6 +1,8 @@
 import multiprocessing
 import random
 import time
+from sys import stdin
+
 from pactor import actor
 
 
@@ -9,16 +11,27 @@ class Monitor:
     def __init__(self, name):
         self.name = name
         self.current_value = -1
+        self.running = False
 
     def set_aggregator(self, aggregator):
         self.aggregator = aggregator
 
-    def run_monitor(self):
-        while True:
-            time.sleep(random.randint(100, 5000) / 1000.0)
-            process_name = multiprocessing.current_process().name
-            self.current_value = random.randint(0, 100)
-            self.aggregator.notify(self.name, self.current_value, process_name)
+    def start_reading(self):
+       self.running = True
+       self.enqueue(self.read_next)
+
+    def stop_reading(self):
+        self.running = False
+
+    def read_next(self):
+        if not self.running:
+            return
+
+        time.sleep(random.randint(100, 5000) / 1000.0)
+        process_name = multiprocessing.current_process().name
+        self.current_value = random.randint(0, 100)
+        self.aggregator.notify(self.name, self.current_value, process_name)
+        self.enqueue(self.read_next)
 
 
 @actor
@@ -44,7 +57,23 @@ def main():
     mon1.set_aggregator(agg.proxy)
     mon2.set_aggregator(agg.proxy)
 
-    mon1.run_monitor()
-    mon2.run_monitor()
+    mon1.start_reading()
+    mon2.start_reading()
 
+    key_press = stdin.read(1)
+    while key_press != 'q':
+        print('Pressed: %s' % (key_press,))
+        key_press = stdin.read(1)
+
+    print ('closing.....')
+
+    mon1.stop_reading()
+    mon1.close()
+    mon1.join()
+
+    mon2.stop_reading()
+    mon2.close()
+    mon2.join()
+
+    agg.close()
     agg.join()

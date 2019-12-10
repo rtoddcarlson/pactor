@@ -11,7 +11,7 @@ pactor
 
 .. end-badges
 
-A lightweight Actor framework in Python.
+A minimalist actor framework in Python.
 
 * Free software: MIT license
 
@@ -22,11 +22,6 @@ Installation
 
     pip install pactor
 
-You can also install the in-development version with::
-
-    pip install https://github.com/rtoddcarlson/pactor/archive/master.zip
-
-
 
 Running the Example
 ===================
@@ -36,23 +31,22 @@ Clone the repo locally, then run the following commands::
     pipenv install
     pipenv run python -m pactor
 
-To exit, press q + Enter.
+To exit, press q.
 
 Documentation
 =============
 
 The actor model is a computational model that is useful for concurrent execution.  See: https://en.wikipedia.org/wiki/Actor_model.
 
-pactor is a lightweight implementation of the actor model in Python, using multiprocessing.
+pactor is a minimalist implementation of the actor model in Python, using multiprocessing.
 
 The actor model stipulates that actors only interact with each other through messaging.  pactor implements that
 restriction by building a proxy around an actor class and converting method calls into messages.
 
-You declare an actor by using the @actor class decorator as follows:
+To wrap a pickleable class as an Actor, simply create an Actor with an instance of the target class, as follows:
 
 .. code-block:: python
 
-    @actor
     class MyActor:
         def __init__(self, name):
             self.name = name
@@ -60,23 +54,28 @@ You declare an actor by using the @actor class decorator as follows:
         def some_method(self):
             ...
 
+    actor_instance = Actor(MyActor())
 
-
-When instantiating an @actor class, you will not get a normal instance.  Instead you will get a wrapper that provides a proxy
-for executing logic for the actor in a separate process.
+The Actor class provides a couple of key capabilities:
+    | **.proxy**
+    | A proxy object that has methods that mirror those on the wrapped class.  Calling a method on the proxy will generate a message to the actor process with the provided parameters.
+    |
+    | **.close()**
+    | Signals that the actor process should discontinue processing messages and terminate.
+    |
+    | **.join()**
+    | Blocks the calling thread until the actor process terminates.
+    |
 
 Consider this simple example of a Monitor:
 
 .. code-block:: python
 
-    @actor
     class Monitor:
-        def __init__(self, name):
+        def __init__(self, name, aggregator):
             self.name = name
-            self.status = 0
-
-        def set_aggregator(self, aggregator):
             self.aggregator = aggregator
+            self.status = 0
 
         def read_status(self):
             while True:
@@ -85,29 +84,22 @@ Consider this simple example of a Monitor:
 
 
 
-And the Aggregator:
+And an Aggregator:
 
 .. code-block:: python
 
-    @actor
     class Aggregator:
-        def __init__(self, name):
-            self.name = name
-
         def update_status(self, target_name, status):
-
+            print('Status update for %s: %s' % (target_name, status))
 
 These could be used as follows:
 
 .. code-block:: python
 
     def main():
-        primary_mon = Monitor('primary')
-        secondary_mon = Monitor('secondary)
-        aggregator = Aggregator('aggregator')
-
-        primary_mon.set_aggregator(aggregator.proxy)
-        secondary_mon.set_aggregator(aggregator.proxy)
+        aggregator = Actor(Aggregator('aggregator'))
+        primary_mon = Actor(Monitor('primary', aggregator.proxy))
+        secondary_mon = Actor(Monitor('secondary', aggregator.proxy))
 
         primary_mon.read_status()
         secondary_mon.read_status()
@@ -116,19 +108,9 @@ These could be used as follows:
 
 This simple example highlights several critical points:
 
-* Each @actor class will actually run in a separate process
-* One @actor can be passed to another @actor using the .proxy,member, which is created by the decorator.
-* Invoking a method on an @actor proxy does not directly invoke that method on the calling thread, but instead is wrapped as a message and passed to the actor process.
-
-The wrapper provided by the @actor decorator exposes two key methods that can be called directly on the created instance:
-
-    **.join()**
-
-    Blocks the calling thread until the actor process terminates.
-
-    **.close()**
-
-    Signals that the actor process should discontinue processing messages and terminate.
+* Each Actor class will actually run in a separate process
+* One Actor can be passed to another Actor using the .proxy member
+* Invoking a method on an Actor proxy does not directly invoke that method on the calling thread, but instead is wrapped as a message and passed to the actor process.
 
 Development
 ===========
@@ -137,19 +119,3 @@ To run the all tests run::
 
     tox
 
-Note, to combine the coverage data from all the tox environments run:
-
-.. list-table::
-    :widths: 10 90
-    :stub-columns: 1
-
-    - - Windows
-      - ::
-
-            set PYTEST_ADDOPTS=--cov-append
-            tox
-
-    - - Other
-      - ::
-
-            PYTEST_ADDOPTS=--cov-append tox

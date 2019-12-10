@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 from unittest.mock import patch, MagicMock
-from pactor import actor
+from pactor import Actor
 
 
 class ActorTestContext:
@@ -12,10 +12,10 @@ class ActorTestContext:
 
 
 @contextmanager
-def actor_test_context(actor_cls):
+def actor_test_context(actor_instance):
     with patch('multiprocessing.Manager') as mock_manager:
         with patch('multiprocessing.Process') as mock_process:
             queue = MagicMock()
             mock_manager().Queue = MagicMock(return_value=queue)
-            test_actor = actor(actor_cls)()
+            test_actor = Actor(actor_instance)
             yield ActorTestContext(test_actor, mock_process, mock_manager, queue)

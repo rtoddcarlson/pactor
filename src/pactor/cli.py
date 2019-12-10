@@ -2,11 +2,9 @@ import multiprocessing
 import random
 import time
 from sys import stdin
+from pactor import ActorWrapper
 
-from pactor import actor
 
-
-@actor
 class Monitor:
     def __init__(self, name):
         self.name = name
@@ -17,8 +15,8 @@ class Monitor:
         self.aggregator = aggregator
 
     def start_reading(self):
-       self.running = True
-       self.enqueue(self.read_next)
+        self.running = True
+        self.enqueue(self.read_next)
 
     def stop_reading(self):
         self.running = False
@@ -34,7 +32,12 @@ class Monitor:
         self.enqueue(self.read_next)
 
 
-@actor
+class SubMonitor(Monitor):
+    def read_next(self):
+        super().read_next()
+        print('current value for monitor %s: %s' % (self.name, self.current_value))
+
+
 class Aggregator:
     def __init__(self):
         self.values = {}
@@ -50,9 +53,9 @@ class Aggregator:
 
 
 def main():
-    mon1 = Monitor('robot')
-    mon2 = Monitor('conveyor')
-    agg = Aggregator()
+    mon1 = ActorWrapper(Monitor('robot'))
+    mon2 = ActorWrapper(SubMonitor('conveyor'))
+    agg = ActorWrapper(Aggregator())
 
     mon1.set_aggregator(agg.proxy)
     mon2.set_aggregator(agg.proxy)
@@ -65,7 +68,7 @@ def main():
         print('Pressed: %s' % (key_press,))
         key_press = stdin.read(1)
 
-    print ('closing.....')
+    print('closing.....')
 
     mon1.stop_reading()
     mon1.close()

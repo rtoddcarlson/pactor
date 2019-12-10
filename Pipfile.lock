@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7b90941b6882a031e0774f7ed45d0e381ff27984caf5cc725ec92b1fdd563e54"
+            "sha256": "75fd543a14bdc53a14fa4187641883a5d2f48f25503ad9d17571bda000d01b08"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -15,7 +15,12 @@
             }
         ]
     },
-    "default": {},
+    "default": {
+        "pactor": {
+            "editable": true,
+            "path": "."
+        }
+    },
     "develop": {
         "pygments": {
             "hashes": [

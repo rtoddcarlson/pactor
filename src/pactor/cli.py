@@ -6,13 +6,11 @@ from pactor import Actor
 
 
 class Monitor:
-    def __init__(self, name):
+    def __init__(self, name, aggregator):
         self.name = name
+        self.aggregator = aggregator
         self.current_value = -1
         self.running = False
-
-    def set_aggregator(self, aggregator):
-        self.aggregator = aggregator
 
     def start_reading(self):
         self.running = True
@@ -53,12 +51,9 @@ class Aggregator:
 
 
 def main():
-    mon1 = Actor(Monitor('robot'))
-    mon2 = Actor(SubMonitor('conveyor'))
     agg = Actor(Aggregator())
-
-    mon1.proxy.set_aggregator(agg.proxy)
-    mon2.proxy.set_aggregator(agg.proxy)
+    mon1 = Actor(Monitor('robot', agg.proxy))
+    mon2 = Actor(SubMonitor('conveyor', agg.proxy))
 
     mon1.proxy.start_reading()
     mon2.proxy.start_reading()

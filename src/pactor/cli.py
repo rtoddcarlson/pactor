@@ -2,7 +2,7 @@ import multiprocessing
 import random
 import time
 from sys import stdin
-from pactor import ActorWrapper
+from pactor import Actor
 
 
 class Monitor:
@@ -53,15 +53,15 @@ class Aggregator:
 
 
 def main():
-    mon1 = ActorWrapper(Monitor('robot'))
-    mon2 = ActorWrapper(SubMonitor('conveyor'))
-    agg = ActorWrapper(Aggregator())
+    mon1 = Actor(Monitor('robot'))
+    mon2 = Actor(SubMonitor('conveyor'))
+    agg = Actor(Aggregator())
 
-    mon1.set_aggregator(agg.proxy)
-    mon2.set_aggregator(agg.proxy)
+    mon1.proxy.set_aggregator(agg.proxy)
+    mon2.proxy.set_aggregator(agg.proxy)
 
-    mon1.start_reading()
-    mon2.start_reading()
+    mon1.proxy.start_reading()
+    mon2.proxy.start_reading()
 
     key_press = stdin.read(1)
     while key_press != 'q':
@@ -70,12 +70,13 @@ def main():
 
     print('closing.....')
 
-    mon1.stop_reading()
+    mon1.proxy.stop_reading()
     mon1.close()
-    mon1.join()
 
-    mon2.stop_reading()
+    mon2.proxy.stop_reading()
     mon2.close()
+
+    mon1.join()
     mon2.join()
 
     agg.close()

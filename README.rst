@@ -56,6 +56,7 @@ To wrap a pickleable class as an Actor, simply create an Actor with an instance 
 
     actor_instance = Actor(MyActor())
 
+
 The Actor class provides a couple of key capabilities:
     | **.proxy**
     | A proxy object that has methods that mirror those on the wrapped class.  Calling a method on the proxy will generate a message to the actor process with the provided parameters.
@@ -66,6 +67,8 @@ The Actor class provides a couple of key capabilities:
     | **.join()**
     | Blocks the calling thread until the actor process terminates.
     |
+
+Additionally, the actor class itself is enhanced with an enqueue method that can be used to send messages to itself.
 
 Consider this simple example of a Monitor:
 
@@ -78,9 +81,9 @@ Consider this simple example of a Monitor:
             self.status = 0
 
         def read_status(self):
-            while True:
-                self.status = fetch_status()
-                self.aggregator.update_status(self.name, self.status)
+            self.status = fetch_status()
+            self.aggregator.update_status(self.name, self.status)
+            self.enqueue(self.read_status) # queue up another read
 
 
 

@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pygments = "*"
+readchar = "*"
 
 [packages]
 pactor = {editable = true,path = "."}

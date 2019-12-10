@@ -1,7 +1,7 @@
 import multiprocessing
 import random
 import time
-from sys import stdin
+import readchar
 from pactor import Actor
 
 
@@ -33,7 +33,7 @@ class Monitor:
 class SubMonitor(Monitor):
     def read_next(self):
         super().read_next()
-        print('current value for monitor %s: %s' % (self.name, self.current_value))
+        print('current value for monitor %s: %s\r' % (self.name, self.current_value))
 
 
 class Aggregator:
@@ -46,11 +46,12 @@ class Aggregator:
         self.values[monitor_name].append(value)
         this_process_name = multiprocessing.current_process().name
 
-        print('Received notification (%s) of value %s from monitor %s in process %s' %
+        print('Received notification (%s) of value %s from monitor %s in process %s\r' %
               (this_process_name, value, monitor_name, process_name))
 
 
 def main():
+    print('Press \'q\' to quit...\r')
     agg = Actor(Aggregator())
     mon1 = Actor(Monitor('robot', agg.proxy))
     mon2 = Actor(SubMonitor('conveyor', agg.proxy))
@@ -58,12 +59,11 @@ def main():
     mon1.proxy.start_reading()
     mon2.proxy.start_reading()
 
-    key_press = stdin.read(1)
+    key_press = readchar.readchar()
     while key_press != 'q':
-        print('Pressed: %s' % (key_press,))
-        key_press = stdin.read(1)
+        key_press = readchar.readchar()
 
-    print('closing.....')
+    print('closing.....\r')
 
     mon1.proxy.stop_reading()
     mon1.close()

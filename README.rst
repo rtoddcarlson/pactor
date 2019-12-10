@@ -27,6 +27,17 @@ You can also install the in-development version with::
     pip install https://github.com/rtoddcarlson/pactor/archive/master.zip
 
 
+
+Running the Example
+===================
+
+Clone the repo locally, then run the following commands::
+
+    pipenv install
+    pipenv run python -m pactor
+
+To exit, press q + Enter.
+
 Documentation
 =============
 

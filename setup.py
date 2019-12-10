@@ -37,7 +37,7 @@ setup(
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))
     ),
     author='Todd Carlson',
-    author_email='',
+    author_email='none@notset.com',
     url='https://github.com/rtoddcarlson/pactor',
     packages=find_packages('src'),
     package_dir={'': 'src'},

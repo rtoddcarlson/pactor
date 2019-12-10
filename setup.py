@@ -31,13 +31,13 @@ setup(
         'fallback_version': '0.0.0',
     },
     license='MIT',
-    description='A lightweight Actor framework in Python.',
+    description='A minimalist actor framework in Python.',
     long_description='%s\n%s' % (
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', read('README.rst')),
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))
     ),
     author='Todd Carlson',
-    author_email='rtoddcarlson@gmail.com',
+    author_email='',
     url='https://github.com/rtoddcarlson/pactor',
     packages=find_packages('src'),
     package_dir={'': 'src'},
@@ -55,24 +55,16 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
-        # uncomment if you test on these interpreters:
-        # 'Programming Language :: Python :: Implementation :: IronPython',
-        # 'Programming Language :: Python :: Implementation :: Jython',
-        # 'Programming Language :: Python :: Implementation :: Stackless',
         'Topic :: Utilities',
     ],
     project_urls={
-        'Documentation': 'https://pactor.readthedocs.io/',
-        'Changelog': 'https://pactor.readthedocs.io/en/latest/changelog.html',
+        'Documentation': 'https://github.com/rtoddcarlson/pactor',
         'Issue Tracker': 'https://github.com/rtoddcarlson/pactor/issues',
     },
     keywords=[
-        # eg: 'keyword1', 'keyword2', 'keyword3',
+        'actor',
     ],
-    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
+    python_requires='>=3.6.*',
     install_requires=[
     ],
     extras_require={

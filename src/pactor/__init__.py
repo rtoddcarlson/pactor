@@ -8,10 +8,9 @@ except DistributionNotFound:
     pass
 
 
-close_message = '_*CLOSE*_'
-
-
 class Actor:
+    __close_message__ = '_*CLOSE*_'
+
     """
         Wraps a pickleable class as an actor to run in a dedicated process.
         The returned Actor instance has a .proxy attribute that should be used
@@ -35,19 +34,18 @@ class Actor:
 
     def close(self):
         """ Closes the actor process """
-        self.queue.put_nowait((close_message,))
+        self.queue.put_nowait((self.__close_message__,))
 
     def join(self):
         """ Joins the calling thread to the process for the actor. """
         self.actor_process.join()
 
-    @staticmethod
-    def __run_actor__(queue, actor_instance):
+    def __run_actor__(self, queue, actor_instance):
         """ Runs the actor process by reading from the queue and executing serially. """
         while True:
             task = queue.get()  # Will block until a task is available
             name = task[0]
-            if name == close_message:
+            if name == self.__close_message__:
                 return
 
             target = getattr(actor_instance, name)
